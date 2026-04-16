@@ -6,7 +6,7 @@
 set -euo pipefail
 
 SKILL_NAME="document-to-markdown"
-SKILL_SRC_URL="https://raw.githubusercontent.com/OpenTechIL/markitdown-for-ai/main/.opencode/skills/document-to-markdown/SKILL.md"
+SKILL_SRC_URL="https://raw.githubusercontent.com/OpenTechIL/markitdown-for-ai/main/skills/document-to-markdown/SKILL.md"
 
 # Resolve the local SKILL.md — prefer a sibling path so the script works both
 # when run from the repo clone and when piped from curl.
