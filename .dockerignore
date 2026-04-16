@@ -1,0 +1,59 @@
+# Version control
+.git
+
+# GitHub workflows (separate directory)
+.github
+
+# Documentation
+README.md
+initial.md
+*.md
+
+# Python cache and compiled files
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info
+.eggs
+dist/
+build/
+
+# Testing
+*.test.*
+test_*
+tests/
+pytest.ini
+.pytest_cache
+.coverage
+htmlcov/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# CI/CD and DevOps
+# Note: .dockerignore and Dockerfile are NOT excluded - needed for build
+docker-compose*.yml
+
+# Environment files
+.env
+.env.local
+*.env
+
+# Python virtual environments (we create our own in Docker)
+venv/
+.venv/
+env/
+
+# Project specific directories
+.sisyphus
+.opencode
+
+# OS files
+.DS_Store
+Thumbs.db
