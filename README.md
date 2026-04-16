@@ -1,7 +1,7 @@
 # MarkItDown Docker Image
 
-[![Docker Pulls](https://ghcr-badge.elias.eu.org/shield/OpenTechIL/markitdown-for-ai?style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/pkgs/container/markitdown-for-ai)
-[![Docker Size](https://img.shields.io/github/package-json/v/OpenTechIL/markitdown-for-ai?label=Image&style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/pkgs/container/markitdown-for-ai)
+[![GHCR Image](https://ghcr-badge.egpl.dev/opentechil/markitdown-for-ai/latest_tag?trim=major&label=latest&style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/pkgs/container/markitdown-for-ai)
+[![GHCR Size](https://ghcr-badge.egpl.dev/opentechil/markitdown-for-ai/size?label=image%20size&style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/pkgs/container/markitdown-for-ai)
 [![GitHub Release](https://img.shields.io/github/v/release/OpenTechIL/markitdown-for-ai?style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/releases)
 [![CI/CD](https://img.shields.io/github/actions/workflow/status/OpenTechIL/markitdown-for-ai/docker.yml?label=CI%2FCD&style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/actions/workflows/docker.yml)
 
