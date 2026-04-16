@@ -1,0 +1,185 @@
+name: Version Bump
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.version.outputs.new_tag }}
+      new_version: ${{ steps.version.outputs.new_version }}
+      changes_detected: ${{ steps.version.outputs.changes_detected }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get latest tag
+        id: get_latest_tag
+        run: |
+          git fetch --tags
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+
+      - name: Analyze commits since last tag
+        id: version
+        run: |
+          LATEST_TAG="${{ steps.get_latest_tag.outputs.latest_tag }}"
+          echo "Latest tag: $LATEST_TAG"
+
+          COMMITS=$(git log $LATEST_TAG..HEAD --oneline 2>/dev/null || echo "")
+          if [ -z "$COMMITS" ]; then
+            COMMITS=$(git log --oneline -n 20)
+          fi
+          echo "Commits since last tag:"
+          echo "$COMMITS"
+
+          BUMP_TYPE="patch"
+
+          if echo "$COMMITS" | grep -qiE '^(feat|fix)!:|BREAKING CHANGE:'; then
+            BUMP_TYPE="major"
+            echo "Bump type: major (breaking change detected)"
+          elif echo "$COMMITS" | grep -qiE '^feat(\(|:|\s)'; then
+            BUMP_TYPE="minor"
+            echo "Bump type: minor (new feature)"
+          elif echo "$COMMITS" | grep -qiE '^fix(\(|:|\s)'; then
+            BUMP_TYPE="patch"
+            echo "Bump type: patch (bug fix)"
+          else
+            echo "Bump type: patch (default - no conventional commits found)"
+          fi
+
+          CURRENT_VERSION="${LATEST_TAG#v}"
+          MAJOR=$(echo $CURRENT_VERSION | cut -d. -f1)
+          MINOR=$(echo $CURRENT_VERSION | cut -d. -f2)
+          PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
+
+          if [ -z "$MAJOR" ] || [ -z "$MINOR" ] || [ -z "$PATCH" ]; then
+            MAJOR=0
+            MINOR=0
+            PATCH=0
+          fi
+
+          case $BUMP_TYPE in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          NEW_TAG="v$NEW_VERSION"
+
+          echo "Current version: $CURRENT_VERSION"
+          echo "New version: $NEW_VERSION"
+
+          HAS_CONVENTIONAL=$(echo "$COMMITS" | grep -ciE '^(feat|fix|docs|style|refactor|test|chore)(\(|:|\s)' || true)
+          if [ "$HAS_CONVENTIONAL" -gt 0 ]; then
+            CHANGES_DETECTED="true"
+          else
+            CHANGES_DETECTED="false"
+          fi
+
+          echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "bump_type=$BUMP_TYPE" >> $GITHUB_OUTPUT
+          echo "changes_detected=$CHANGES_DETECTED" >> $GITHUB_OUTPUT
+
+      - name: Create version branch and PR
+        if: steps.version.outputs.changes_detected == 'true'
+        env:
+          CURRENT_VERSION: ${{ steps.version.outputs.current_version }}
+          NEW_VERSION: ${{ steps.version.outputs.new_version }}
+          NEW_TAG: ${{ steps.version.outputs.new_tag }}
+          BUMP_TYPE: ${{ steps.version.outputs.bump_type }}
+        run: |
+          git checkout -b version-bump
+
+          TODAY=$(date '+%Y-%m-%d')
+
+          sed -i "s/^## \[Unreleased\]$/## [Unreleased]\n\n## [${NEW_VERSION}] - ${TODAY}\n\n### Changed\n- Version bump to ${NEW_VERSION} (${BUMP_TYPE})\n/" CHANGELOG.md
+
+          sed -i "s/\[Unreleased\]: https:\/\/github.com\/OpenTechIL\/markitdown-for-ai\/compare\/v${CURRENT_VERSION}\.\.\.main/[Unreleased]: https:\/\/github.com\/OpenTechIL\/markitdown-for-ai\/compare\/v${NEW_VERSION}...main\n[${NEW_VERSION}]: https:\/\/github.com\/OpenTechIL\/markitdown-for-ai\/releases\/v${NEW_VERSION}/" CHANGELOG.md
+
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add CHANGELOG.md
+          git commit -m "chore: bump version $CURRENT_VERSION → $NEW_VERSION"
+
+          git push origin version-bump --force
+
+          COMMITS=$(gh api repos/${{ github.repository_owner }}/${{ github.repository }}/commits?per_page=20 --jq '.[].commit.message' | head -20)
+
+          {
+            echo "## Version Bump: $CURRENT_VERSION → $NEW_VERSION"
+            echo ""
+            echo "**Bump Type:** $BUMP_TYPE"
+            echo ""
+            echo "### Changes Since Last Release"
+            echo ""
+            echo "$COMMITS"
+            echo ""
+            echo "### Next Steps"
+            echo ""
+            echo "1. Review and merge this PR"
+            echo "2. Merging will automatically create tag \`$NEW_TAG\`"
+            echo "3. Docker image will be built and pushed with tags: \`latest\`, \`$NEW_VERSION\`, \`${NEW_VERSION%.*}\`, \`${NEW_VERSION%%.*}\`"
+            echo ""
+            echo "---"
+            echo "*This PR was automatically created by the version bump workflow.*"
+          } > /tmp/pr_body.md
+
+          gh pr create \
+            --title "chore: bump version $CURRENT_VERSION → $NEW_VERSION" \
+            --body-file /tmp/pr_body.md \
+            --head version-bump \
+            --base main
+
+          PR_NUMBER=$(gh pr list --head version-bump --state open --json number -q '.[0].number')
+          if [ -n "$PR_NUMBER" ]; then
+            gh pr edit $PR_NUMBER --add-label version-bump
+          fi
+
+      - name: Create tag when PR is merged
+        if: github.event_name == 'push' && contains(github.ref, 'refs/heads/version-bump')
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const newTag = '${{ steps.version.outputs.new_tag }}';
+            const sha = context.sha;
+
+            try {
+              await github.rest.git.getRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'tags/' + newTag
+              });
+              console.log('Tag ' + newTag + ' already exists');
+            } catch (e) {
+              await github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'refs/tags/' + newTag,
+                sha: sha
+              });
+              console.log('Created tag ' + newTag);
+            }
