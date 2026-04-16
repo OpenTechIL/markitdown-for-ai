@@ -1,9 +1,9 @@
 # MarkItDown Docker Image
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/obot-ai/markitdown-for-ai?style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/pkgs/container/markitdown-for-ai)
-[![Docker Size](https://img.shields.io/docker/image-size/ghcr.io/obot-ai/markitdown-for-ai/latest?style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/pkgs/container/markitdown-for-ai)
-[![GitHub Release](https://img.shields.io/github/v/release/obot-ai/markitdown-for-ai?style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/releases)
-[![CI/CD](https://img.shields.io/github/actions/workflow/status/obot-ai/markitdown-for-ai/docker.yml?label=CI%2FCD&style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/actions/workflows/docker.yml)
+[![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/OpenTechIL/markitdown-for-ai?style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/pkgs/container/markitdown-for-ai)
+[![Docker Size](https://img.shields.io/docker/image-size/ghcr.io/OpenTechIL/markitdown-for-ai/latest?style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/pkgs/container/markitdown-for-ai)
+[![GitHub Release](https://img.shields.io/github/v/release/OpenTechIL/markitdown-for-ai?style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/releases)
+[![CI/CD](https://img.shields.io/github/actions/workflow/status/OpenTechIL/markitdown-for-ai/docker.yml?label=CI%2FCD&style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/actions/workflows/docker.yml)
 
 MarkItDown is a Python tool that converts various document formats to Markdown. This Docker image provides a portable, easy-to-use containerized version that works out of the box.
 
@@ -24,7 +24,7 @@ MarkItDown converts documents from popular formats into clean Markdown text. It 
 Pull the latest image from GitHub Container Registry:
 
 ```bash
-docker pull ghcr.io/obot-ai/markitdown-for-ai
+docker pull ghcr.io/OpenTechIL/markitdown-for-ai
 ```
 
 ## Usage
@@ -32,25 +32,25 @@ docker pull ghcr.io/obot-ai/markitdown-for-ai
 ### Convert a file
 
 ```bash
-docker run --rm -i ghcr.io/obot-ai/markitdown-for-ai < input.pdf
+docker run --rm -i ghcr.io/OpenTechIL/markitdown-for-ai < input.pdf
 ```
 
 ### Convert via pipe
 
 ```bash
-cat file.docx | docker run --rm -i ghcr.io/obot-ai/markitdown-for-ai
+cat file.docx | docker run --rm -i ghcr.io/OpenTechIL/markitdown-for-ai
 ```
 
 ### Specify output file
 
 ```bash
-docker run --rm ghcr.io/obot-ai/markitdown-for-ai input.pdf -o output.md
+docker run --rm ghcr.io/OpenTechIL/markitdown-for-ai input.pdf -o output.md
 ```
 
 ### Interactive mode
 
 ```bash
-docker run --rm -it ghcr.io/obot-ai/markitdown-for-ai
+docker run --rm -it ghcr.io/OpenTechIL/markitdown-for-ai
 ```
 
 Then enter file content via stdin and press Ctrl+D when done.
