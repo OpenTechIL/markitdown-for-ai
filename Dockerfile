@@ -19,6 +19,11 @@ RUN pip install --no-cache-dir "markitdown[pdf,docx,pptx,xlsx]"
 # Stage 2: Runtime
 FROM python:3.10-slim
 
+LABEL org.opencontainers.image.title="MarkItDown4AI" \
+      org.opencontainers.image.description="Convert PDF, DOCX, PPTX, XLSX, and HTML to Markdown — no Python required. Powered by Microsoft MarkItDown." \
+      org.opencontainers.image.source="https://github.com/OpenTechIL/markitdown-for-ai" \
+      org.opencontainers.image.licenses="Apache-2.0"
+
 # Create non-root user for security
 RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 
