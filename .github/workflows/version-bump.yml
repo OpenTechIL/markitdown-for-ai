@@ -107,6 +107,7 @@ jobs:
       - name: Create version branch and PR
         if: steps.version.outputs.changes_detected == 'true'
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CURRENT_VERSION: ${{ steps.version.outputs.current_version }}
           NEW_VERSION: ${{ steps.version.outputs.new_version }}
           NEW_TAG: ${{ steps.version.outputs.new_tag }}
@@ -127,35 +128,38 @@ jobs:
 
           git push origin version-bump --force
 
-          COMMITS=$(gh api repos/${{ github.repository_owner }}/${{ github.repository }}/commits?per_page=20 --jq '.[].commit.message' | head -20)
+          EXISTING_PR=$(gh pr list --head version-bump --base main --state open --json number -q '.[0].number')
 
-          {
-            echo "## Version Bump: $CURRENT_VERSION → $NEW_VERSION"
-            echo ""
-            echo "**Bump Type:** $BUMP_TYPE"
-            echo ""
-            echo "### Changes Since Last Release"
-            echo ""
-            echo "$COMMITS"
-            echo ""
-            echo "### Next Steps"
-            echo ""
-            echo "1. Review and merge this PR"
-            echo "2. Merging will automatically create tag \`$NEW_TAG\`"
-            echo "3. Docker image will be built and pushed with tags: \`latest\`, \`$NEW_VERSION\`, \`${NEW_VERSION%.*}\`, \`${NEW_VERSION%%.*}\`"
-            echo ""
-            echo "---"
-            echo "*This PR was automatically created by the version bump workflow.*"
-          } > /tmp/pr_body.md
+          if [ -n "$EXISTING_PR" ]; then
+            echo "PR #$EXISTING_PR already exists — updating title"
+            gh pr edit "$EXISTING_PR" \
+              --title "chore: bump version $CURRENT_VERSION → $NEW_VERSION"
+          else
+            COMMITS=$(gh api repos/${{ github.repository_owner }}/${{ github.repository }}/commits?per_page=20 --jq '.[].commit.message' | head -20)
 
-          gh pr create \
-            --title "chore: bump version $CURRENT_VERSION → $NEW_VERSION" \
-            --body-file /tmp/pr_body.md \
-            --head version-bump \
-            --base main
+            {
+              echo "## Version Bump: $CURRENT_VERSION → $NEW_VERSION"
+              echo ""
+              echo "**Bump Type:** $BUMP_TYPE"
+              echo ""
+              echo "### Changes Since Last Release"
+              echo ""
+              echo "$COMMITS"
+              echo ""
+              echo "### Next Steps"
+              echo ""
+              echo "1. Review and merge this PR"
+              echo "2. Merging will automatically create tag \`$NEW_TAG\`"
+              echo "3. Docker image will be built and pushed with tags: \`latest\`, \`$NEW_VERSION\`, \`${NEW_VERSION%.*}\`, \`${NEW_VERSION%%.*}\`"
+              echo ""
+              echo "---"
+              echo "*This PR was automatically created by the version bump workflow.*"
+            } > /tmp/pr_body.md
 
-          PR_NUMBER=$(gh pr list --head version-bump --state open --json number -q '.[0].number')
-          if [ -n "$PR_NUMBER" ]; then
-            gh pr edit $PR_NUMBER --add-label version-bump
+            gh pr create \
+              --title "chore: bump version $CURRENT_VERSION → $NEW_VERSION" \
+              --body-file /tmp/pr_body.md \
+              --head version-bump \
+              --base main
           fi
 
