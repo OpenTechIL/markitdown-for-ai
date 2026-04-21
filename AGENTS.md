@@ -70,10 +70,27 @@ The GitHub Actions workflow (`.github/workflows/docker.yml`) automatically:
 
 No manual Docker push needed - CI/CD handles it.
 
+## Skill Distribution
+
+The `document-to-markdown` skill lives in `skills/document-to-markdown/SKILL.md`.
+It is installed via:
+
+```bash
+npx skills add OpenTechIL/markitdown-for-ai          # all supported agents
+bash install-skill.sh --ai claude                     # Claude Code only
+bash install-skill.sh --ai opencode                   # OpenCode only
+bash install-skill.sh                                 # all locations
+```
+
+When updating the skill (new formats, changed image tag, updated commands), edit
+`skills/document-to-markdown/SKILL.md` directly — the install script fetches it
+from GitHub on the fly so users always get the latest version.
+
 ## Quick Reference
 
 | Command | Description |
 |---------|-------------|
 | `docker build -t markitdown-for-ai .` | Build locally |
-| `docker run --rm -i markitdown-for-ai < file.pdf` | Convert file via stdin |
+| `docker run --rm -i markitdown-for-ai < file.pdf` | Convert via stdin |
 | `cat file.docx \| docker run --rm -i markitdown-for-ai` | Pipe content |
+| `docker run --rm -v "$(pwd):/data" -w /data markitdown-for-ai file.docx` | Convert by filename |
