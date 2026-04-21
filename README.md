@@ -1,6 +1,6 @@
 # MarkItDown4AI (MarkItDown-for-AI)
 
-![License](https://img.shields.io/github/license/OpenTechIL/markitdown-for-ai)
+![License](https://img.shields.io/github/license/OpenTechIL/markitdown-for-ai?style=flat-square&logo=apache)
 ![Docker Push](https://img.shields.io/github/actions/workflow/status/OpenTechIL/markitdown-for-ai/docker.yml?label=build&style=flat-square)
 ![Latest](https://ghcr-badge.egpl.dev/opentechil/markitdown-for-ai/latest_tag?trim=major&label=latest&style=flat-square)
 ![Release](https://img.shields.io/github/v/release/OpenTechIL/markitdown-for-ai?style=flat-square)
@@ -199,4 +199,4 @@ Contributions are welcome! Please read the code of conduct and contribution guid
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+Apache License 2.0 - see [LICENSE](LICENSE) file for details.
