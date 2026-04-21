@@ -11,22 +11,22 @@ Convert documents to Markdown using the `markitdown-for-ai` Docker image. No loc
 
 **From stdin (pipe):**
 ```bash
-docker run --rm -i ghcr.io/obot-ai/markitdown-for-ai < file.pdf
+docker run --rm -i ghcr.io/opentechil/markitdown-for-ai:latest < file.pdf
 ```
 
 **From a local file (mount current directory):**
 ```bash
-docker run --rm -v "$(pwd):/data" -w /data ghcr.io/obot-ai/markitdown-for-ai file.docx
+docker run --rm -v "$(pwd):/data" -w /data ghcr.io/opentechil/markitdown-for-ai:latest file.docx
 ```
 
 **Save output to a file:**
 ```bash
-docker run --rm -i ghcr.io/obot-ai/markitdown-for-ai < input.pptx > output.md
+docker run --rm -i ghcr.io/opentechil/markitdown-for-ai:latest < input.pptx > output.md
 ```
 
 **Pipe from cat:**
 ```bash
-cat file.xlsx | docker run --rm -i ghcr.io/obot-ai/markitdown-for-ai
+cat file.xlsx | docker run --rm -i ghcr.io/opentechil/markitdown-for-ai:latest
 ```
 
 ## Supported Formats
@@ -42,7 +42,7 @@ cat file.xlsx | docker run --rm -i ghcr.io/obot-ai/markitdown-for-ai
 ## Pull the Image (first time)
 
 ```bash
-docker pull ghcr.io/obot-ai/markitdown-for-ai
+docker pull ghcr.io/opentechil/markitdown-for-ai:latest
 ```
 
 ## Agent Workflow
@@ -56,7 +56,7 @@ When a user gives you a document file to read or analyze:
 **Example — user says "summarize this PDF":**
 ```bash
 # Capture markdown into a shell variable or pipe directly to next step
-docker run --rm -i ghcr.io/obot-ai/markitdown-for-ai < report.pdf
+docker run --rm -i ghcr.io/opentechil/markitdown-for-ai:latest < report.pdf
 ```
 
 ## When to Use This Skill
@@ -67,40 +67,40 @@ Use this skill whenever you need to extract or process content from documents. H
 
 - **Reading DOCX files**: "Read this Word document", "extract text from docx"
   ```bash
-  docker run --rm -v "$(pwd):/data" -w /data ghcr.io/obot-ai/markitdown-for-ai document.docx
+  docker run --rm -v "$(pwd):/data" -w /data ghcr.io/opentechil/markitdown-for-ai:latest document.docx
   ```
 
 - **Reading PDF files**: "Convert PDF to markdown", "extract PDF content"
   ```bash
-  docker run --rm -i ghcr.io/obot-ai/markitdown-for-ai < report.pdf
+  docker run --rm -i ghcr.io/opentechil/markitdown-for-ai:latest < report.pdf
   ```
 
 - **Processing PowerPoint**: "Extract slides from pptx", "convert presentation"
   ```bash
-  docker run --rm -v "$(pwd):/data" -w /data ghcr.io/obot-ai/markitdown-for-ai slides.pptx
+  docker run --rm -v "$(pwd):/data" -w /data ghcr.io/opentechil/markitdown-for-ai:latest slides.pptx
   ```
 
 - **Extracting Excel data**: "Read spreadsheet", "convert xlsx to markdown"
   ```bash
-  docker run --rm -i ghcr.io/obot-ai/markitdown-for-ai < data.xlsx
+  docker run --rm -i ghcr.io/opentechil/markitdown-for-ai:latest < data.xlsx
   ```
 
 - **Scraping HTML**: "Convert web page to markdown", "extract article content"
   ```bash
-  docker run --rm -v "$(pwd):/data" -w /data ghcr.io/obot-ai/markitdown-for-ai page.html
+  docker run --rm -v "$(pwd):/data" -w /data ghcr.io/opentechil/markitdown-for-ai:latest page.html
   ```
 
 ### AI & Automation Use Cases
 
 - **Summarizing documents**: "Summarize this PDF/report/document" — first convert to markdown, then use the extracted content for summarization
   ```bash
-  content=$(docker run --rm -i ghcr.io/obot-ai/markitdown-for-ai < document.pdf)
+  content=$(docker run --rm -i ghcr.io/opentechil/markitdown-for-ai:latest < document.pdf)
   # Then feed $content to your summarization prompt
   ```
 
 - **Analyzing contracts/agreements**: "Extract key terms from this PDF", "read the contract"
   ```bash
-  docker run --rm -i ghcr.io/obot-ai/markitdown-for-ai < contract.pdf
+  docker run --rm -i ghcr.io/opentechil/markitdown-for-ai:latest < contract.pdf
   ```
 
 - **Processing uploaded files**: When users upload documents for analysis — convert first, then reason over the markdown
@@ -108,7 +108,7 @@ Use this skill whenever you need to extract or process content from documents. H
 - **Batch document processing**: Convert multiple files in a loop for indexing or analysis
   ```bash
   for f in *.pdf; do
-    docker run --rm -i ghcr.io/obot-ai/markitdown-for-ai < "$f" > "${f%.pdf}.md"
+    docker run --rm -i ghcr.io/opentechil/markitdown-for-ai:latest < "$f" > "${f%.pdf}.md"
   done
   ```
 
@@ -128,7 +128,7 @@ Use this skill whenever you need to extract or process content from documents. H
 
 | Mistake | Fix |
 |---------|-----|
-| Using `{owner}` placeholder | Use `ghcr.io/obot-ai/markitdown-for-ai` |
+| Using `{owner}` placeholder | Use `ghcr.io/opentechil/markitdown-for-ai:latest` |
 | Forgetting `-i` flag for stdin | Always add `-i` when piping |
 | Mounting wrong path | Use `$(pwd)` and `-w /data` together |
 | Expecting Docker to find relative paths without mount | Mount with `-v "$(pwd):/data"` |
