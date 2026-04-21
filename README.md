@@ -1,38 +1,60 @@
-# MarkItDown Docker Image
+# MarkItDown4AI (MarkItDown-for-AI)
 
-[![GHCR Image](https://ghcr-badge.egpl.dev/opentechil/markitdown-for-ai/latest_tag?trim=major&label=latest&style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/pkgs/container/markitdown-for-ai)
-[![GHCR Size](https://ghcr-badge.egpl.dev/opentechil/markitdown-for-ai/size?label=image%20size&style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/pkgs/container/markitdown-for-ai)
-[![GitHub Release](https://img.shields.io/github/v/release/OpenTechIL/markitdown-for-ai?style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/releases)
-[![CI/CD](https://img.shields.io/github/actions/workflow/status/OpenTechIL/markitdown-for-ai/docker.yml?label=CI%2FCD&style=flat-square)](https://github.com/OpenTechIL/markitdown-for-ai/actions/workflows/docker.yml)
+![License](https://img.shields.io/github/license/OpenTechIL/markitdown-for-ai)
+![Docker Push](https://img.shields.io/github/actions/workflow/status/OpenTechIL/markitdown-for-ai/docker.yml?label=build&style=flat-square)
+![Latest](https://ghcr-badge.egpl.dev/opentechil/markitdown-for-ai/latest_tag?trim=major&label=latest&style=flat-square)
+![Release](https://img.shields.io/github/v/release/OpenTechIL/markitdown-for-ai?style=flat-square)
+![Size](https://ghcr-badge.egpl.dev/opentechil/markitdown-for-ai/size?label=image%20size&style=flat-square)
+![CI/CD](https://img.shields.io/github/actions/workflow/status/OpenTechIL/markitdown-for-ai/docker.yml?label=CI%2FCD&style=flat-square)
 
-MarkItDown is a Python tool that converts various document formats to Markdown. This Docker image provides a portable, easy-to-use containerized version that works out of the box.
+Containerized MarkItDown to easily convert documents to Markdown.
 
-## What is MarkItDown?
+```mermaid
+flowchart LR
+    A[Document] --> B[MarkItDown4AI]
+    B --> C[Markdown]
+```
 
-MarkItDown converts documents from popular formats into clean Markdown text. It preserves document structure including tables, lists, headings, and basic formatting, making it ideal for content extraction, documentation processing, and workflow automation.
+## What is MarkItDown4AI?
 
-## Supported Formats
+MarkItDown (markitdown-for-ai) converts documents from popular formats into clean Markdown text. It preserves document structure including tables, lists, headings, and basic formatting — perfect for content extraction, automation workflows, and AI integration.
 
-- **PDF**  - Portable Document Format
-- **DOCX** - Microsoft Word documents
-- **PPTX** - Microsoft PowerPoint presentations
-- **XLSX** - Microsoft Excel spreadsheets
-- **HTML** - Web pages and HTML documents
-
-## Installation
-
-Pull the latest image from GitHub Container Registry:
+Uses Microsoft's MarkITDown library with Docker/Podman containers — no Python installation needed.
 
 ```bash
-docker pull ghcr.io/OpenTechIL/markitdown-for-ai
+docker run --rm -i ghcr.io/OpenTechIL/markitdown-for-ai < file.pdf
+```
+
+## Quick Start
+
+```bash
+docker run --rm -i ghcr.io/opentechil/markitdown-for-ai < file.pdf
 ```
 
 ## Usage
 
-### Convert a file
+### Convert a File
 
 ```bash
-docker run --rm -i ghcr.io/OpenTechIL/markitdown-for-ai < input.pdf
+docker run --rm -i ghcr.io/opentechil/markitdown-for-ai < input.pdf
+```
+
+### Convert via pipe
+
+```bash
+cat file.docx | docker run --rm -i ghcr.io/opentechil/markitdown-for-ai
+```
+
+### Specify output file
+
+```bash
+docker run --rm ghcr.io/opentechil/markitdown-for-ai input.pdf -o output.md
+```
+
+### Interactive mode
+
+```bash
+docker run --rm -it ghcr.io/opentechil/markitdown-for-ai
 ```
 
 ### Convert via pipe
@@ -50,10 +72,34 @@ docker run --rm ghcr.io/OpenTechIL/markitdown-for-ai input.pdf -o output.md
 ### Interactive mode
 
 ```bash
-docker run --rm -it ghcr.io/OpenTechIL/markitdown-for-ai
+docker pull ghcr.io/opentechil/markitdown-for-ai
 ```
 
-Then enter file content via stdin and press Ctrl+D when done.
+Then enter file content via stdin and press `Ctrl+D` to finish.
+
+### Batch Processing
+
+Convert multiple files:
+
+```bash
+for file in *.pdf; do
+  docker run --rm -i ghcr.io/opentechil/markitdown-for-ai < "$file" > "${file%.pdf}.md"
+done
+```
+
+### Pipeline Integration
+
+Using JSON output for programmatic integration:
+
+```bash
+docker run --rm -i ghcr.io/opentechil/markitdown-for-ai < input.md | jq
+```
+
+### Parse HTML Web Pages
+
+```bash
+curl -s "https://example.com" | docker run --rm -i ghcr.io/opentechil/markitdown-for-ai
+```
 
 ## GitHub Actions Integration
 
@@ -68,28 +114,53 @@ The CI/CD pipeline ensures the image is always up to date with the latest MarkIt
 
 ## Multi-Platform Support
 
-The Docker image supports multiple architectures:
+The Docker image builds for multiple architectures:
 
-| Architecture | Description |
-|--------------|-------------|
-| `amd64`      | x86_64 (standard desktop and server) |
-| `arm64`      | ARM 64-bit (Apple Silicon, ARM servers) |
+| Architecture | Platform |
+|--------------|----------|
+| `amd64`      | x86_64 (~90% of servers and desktops) |
+| `arm64`      | ARM 64-bit (Apple Silicon, AWS Graviton, ARM servers) |
 
-This means the image runs natively on:
+Native support for:
 
--   Linux servers (x86 and ARM)
--   macOS (Intel and Apple Silicon via Rosetta 2)
--   Windows with Docker Desktop
+- ✅ **Linux** - Servers on x86_64 and ARM
+- ✅ **macOS** - Intel and Apple Silicon via Docker
+- ✅ **Windows** - With Docker Desktop
+
+## Architecture
+
+```mermaid
+flowchart TB
+    A[Download Image] --> B[Run Container]
+    B --> C[Convert Document]
+    C --> D[Output Markdown]
+    B --> E[Process with<br/> stdin/out]
+    C --> F[Parse Structure<br/>tables/lists/headings]
+
+    style A fill:#e1f5ff
+    style B fill:#bbdefb
+    style C fill:#90caf9
+    style D fill:#64b5f6
+```
+
+## Docker Security
+
+Built with security best practices:
+
+- ✅ **Non-root user** - Runs as `appuser`
+- ✅ **Layer caching** - Optimized build layers
+- ✅ **Minimal image** - Based on Python Alpine/Slim
+- ✅ **No external** - Self-contained MarkITDown installation
 
 ## Development
 
-To build the image locally:
+### Build Locally
 
 ```bash
 docker build -t markitdown-for-ai .
 ```
 
-To test locally:
+### Test Locally
 
 ```bash
 docker run --rm -i markitdown-for-ai < test.pdf
@@ -105,13 +176,15 @@ Install the `document-to-markdown` skill so AI agents (OpenCode, Claude Code, Co
 npx skills add OpenTechIL/markitdown-for-ai
 ```
 
-This works with all supported agents and installs to the correct location automatically.
+This works with all supported agents and installs to the correct location automatically. The skill automatically detects and works with both Docker and Podman.
 
 ### One-command bash install
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/OpenTechIL/markitdown-for-ai/main/install-skill.sh)
 ```
+
+Installs the skill with automatic Docker/Podman detection.
 
 This copies the skill into:
 - `~/.config/opencode/skills/document-to-markdown/` (OpenCode global)
@@ -120,17 +193,10 @@ This copies the skill into:
 
 After installing, any agent session will automatically know the correct commands to convert documents to Markdown.
 
-### Install via agent prompt
+## Contributing
 
-Alternatively, copy and paste this prompt directly into any LLM agent (Claude Code, AmpCode, Cursor, Windsurf, etc.):
-
-```
-Run this command in my terminal:
-npx skills add OpenTechIL/markitdown-for-ai
-```
-
-The agent will execute the installer and confirm the skill is ready.
+Contributions are welcome! Please read the code of conduct and contribution guidelines.
 
 ## License
 
-This project is licensed under the terms included in the [LICENSE](LICENSE) file.
+MIT License - see [LICENSE](LICENSE) file for details.
