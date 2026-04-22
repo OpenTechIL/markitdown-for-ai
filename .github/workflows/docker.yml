@@ -77,6 +77,21 @@ jobs:
             const tag = '${{ github.ref_name }}';
             const version = tag.replace('v', '');
 
+            // Check if release already exists for this tag
+            try {
+              const { data: existingRelease } = await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag: tag
+              });
+              console.log('Release already exists: ' + existingRelease.html_url);
+              return;
+            } catch (e) {
+              if (e.status !== 404) {
+                console.log('Error checking release: ' + e.message);
+              }
+            }
+
             // Get changelog from CHANGELOG.md
             let changelog = 'See CHANGELOG.md for details.';
 
